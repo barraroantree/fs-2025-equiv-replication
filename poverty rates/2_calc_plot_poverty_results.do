@@ -1,10 +1,22 @@
 * set paths and directories 
 ********************************************************************************
 global moddata "C:/moddata" // path where modified data files and output are stored
+global pricedata "${repo}//Prices"     // location of price files in repo 
 
-global outdir_povrates "${moddata}/poverty rates/"
-global outdir_scales "${moddata}/scales/"
-global outdir_ranks "${moddata}/ranks/"
+global dir "${moddata}"             // output directory - use same as local modified data location
+
+global data "$dir"
+global tables "$dir/tables"
+global graphs "$dir/graphs"
+
+global outdir_povrates "${graphs}/poverty rates/"
+global outdir_scales "${graphs}/scales/"
+global outdir_ranks "${graphs}/ranks/"
+
+* make directories if they don't exist and change to output directory
+cap mkdir "${outdir_povrates}"
+cap mkdir "${outdir_scales}"
+cap mkdir "${outdir_ranks}"
 
 
 cd "${outdir_povrates}"
@@ -13,7 +25,7 @@ cd "${outdir_povrates}"
 
 /* Import overall price index   */
 *********************************************************************************************
-insheet using "${rawdata}//CPM02.20240322231856.csv", clear names
+insheet using "${pricedata}//CPM02.20240322231856.csv", clear names
 ren month strmonth
 encode strmonth, gen(month) 
 keep if selectedbasereferenceperiod=="Base December 2023=100"

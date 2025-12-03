@@ -4,8 +4,8 @@
 eststo drop est*
 
 local years 1987 1994 1999 2004 2009 2015
-local results "$dir/tables"
-local moddata "C:/moddata"          // modified data location on local machine
+local results "${tables}"
+local moddata "${moddata}"          // modified data location on local machine
 
 * Buhmann-type scales
 

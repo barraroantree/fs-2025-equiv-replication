@@ -12,7 +12,7 @@ global moddata "C:/moddata"          // modified data location on local machine
 
 global repo "C:/Users/broantre/Documents/GitHub/fs-2025-equiv-replication/" // local repo folder 
 global code "${repo}/Scales"        // code folder in repo for non-3SLS code  
-global prices "${repo}//Prices"     // location of price files in repo 
+global pricedata "${repo}//Prices"     // location of price files in repo 
 
 global dir "${moddata}"             // output directory - use same as local modified data location
 
@@ -20,6 +20,11 @@ global data "$dir"
 global tables "$dir/tables"
 global graphs "$dir/graphs"
 
+
+* make directories if they don't exist
+cap mkdir "${dir}"
+cap mkdir "${tables}"
+cap mkdir "${graphs}"
 
 
 * Data years

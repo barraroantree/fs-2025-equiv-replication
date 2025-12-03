@@ -49,23 +49,4 @@ putexcel set "${tables}/ds_quaids_childages", sheet(${y}) modify
 putexcel A2 = matrix(r(table)), names
 
 ****
-
-/* For revision: re-estimate models by total expenditure quartile
-
-xtile totexpend_quartile = totexpend, nq(4)
-
-foreach x in 1 2 3 4 {
-	
-demandsys aids $aids_shares resid_share if totexpend_quartile == `x', prices($prices p_misc) expenditure($expenditure) demographics(hhnumu14 hhadults_star, scaling)
-
-putexcel set "${tables}\aids\ds_quartiles_${y}", sheet(Quartile `x') modify
-putexcel A1 = "AIDS Results, Adult and Child Scales, By Quartile"
-putexcel A3 = matrix(r(table)), names nformat(number_d3)
-
-demandsys quaids $aids_shares resid_share if totexpend_quartile == `x', prices($prices p_misc) expenditure($expenditure) demographics(hhnumu14 hhadults_star, scaling)
-
-putexcel set "${tables}\quaids\ds_quartiles_${y}", sheet(Quartile `x') modify
-putexcel A1 = "QUAIDS Results, Adult and Child Scales, By Quartile"
-putexcel A3 = matrix(r(table)), names nformat(number_d3)
-	
-*/	
+// end 

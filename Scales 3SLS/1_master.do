@@ -20,6 +20,11 @@ global graphs "$dir/graphs"
 
 global output "${tables}"       // sets the dir to output 3SLS estimation results
 
+* make directories if they don't exist
+cap mkdir "${dir}"
+cap mkdir "${tables}"
+cap mkdir "${graphs}"
+
 
 * Define years of data
 global years 1987 1994 1999 2004 2009 2015

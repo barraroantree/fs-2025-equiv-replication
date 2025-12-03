@@ -9,7 +9,7 @@
     save "${moddata}/HBS_${y}.dta", replace
 
     * Load prices and save as .dta
-    import excel using "${prices}/prices_${y}_base_2011.xlsx", clear firstrow 
+    import excel using "${pricedata}/prices_${y}_base_2011.xlsx", clear firstrow 
     save "${moddata}/prices_${y}_base_2011.dta", replace
 
     * Merge in prices and save analysis data

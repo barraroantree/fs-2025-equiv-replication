@@ -48,6 +48,15 @@ global years 1987 1994 1999 2004 2009 2015
 global expenditure totexpend
 
 
+********************************************************************************
+* Install dependencies if not already installed
+********************************************************************************
+
+ssc install binscatter 
+ssc install inequal7
+
+// add any others you might uncover as you run the code here  
+
 
 ********************************************************************************
 *** Part 1: OLS/kernel scale estimation (Engel, Rothbarth, AIDS/QUAIDS, Buhmann)

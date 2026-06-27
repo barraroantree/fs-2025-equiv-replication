@@ -25,9 +25,9 @@ save "${moddata}//cpi_basejan2023.dta", replace
 use "${moddata}//HBS_1987_analysis.dta", clear
 append using "${moddata}//HBS_1994_analysis.dta"
 append using "${moddata}//HBS_1999_analysis.dta"
-append using "${moddata}//HBS_2004_analysis.dta"
+append using "${moddata}//HBS_2004_analysis.dta", force
 append using "${moddata}//HBS_2009_analysis.dta"
-append using "${moddata}//HBS_2015_analysis.dta"
+append using "${moddata}//HBS_2015_analysis.dta", force
 
 
 * some missing/differently named vars used below
@@ -321,13 +321,14 @@ preserve
 
 	tw connect arop fixed1987arop datayear, by(equiv_measure, note(""))  ///
 		ytitle("Poverty rate (%)")	xtitle("Year") ///
-		legend(label(1 "Contemporaneous scale") label(2 "Fixed 1987 scale")) ///
-		scheme(stcolor_alt)
+		legend(pos(6) label(1 "Contemporaneous scale") label(2 "Fixed 1987 scale")) ///
+		scheme( stsj)
 	graph export "arop_all_fixedchanging_scale.png", replace
+	graph export "${graphs}//figure6.png", replace
 	
 	tw connect arop datayear, by(equiv_measure, note(""))  ///
 		ytitle("Poverty rate (%)")	xtitle("Year") ///
-		scheme(stcolor_alt)
+		scheme( stsj)
 	graph export "arop_all_changing_scale.png", replace
 
 restore 
@@ -349,13 +350,14 @@ preserve
 
 	tw connect arop fixed1987arop datayear, by(equiv_measure, note(""))  ///
 		ytitle("Poverty rate: children (%)")	xtitle("Year") ///
-		legend(label(1 "Contemporaneous scale") label(2 "Fixed 1987 scale")) ///
-		scheme(stcolor_alt)
+		legend(pos(6) label(1 "Contemporaneous scale") label(2 "Fixed 1987 scale")) ///
+		scheme( stsj)
 	graph export "arop_kids_fixedchanging_scale.png", replace
+	graph export "${graphs}//figure7.png", replace
 
 	tw connect arop datayear, by(equiv_measure, note(""))  ///
 		ytitle("Poverty rate: children (%)")	xtitle("Year") ///
-		scheme(stcolor_alt)
+		scheme( stsj)
 	graph export "arop_kids_changing_scale.png", replace
 
 
@@ -375,20 +377,19 @@ preserve
 
 	tw connect gini fixed1987gini datayear, by(equiv_measure, note(""))  ///
 		ytitle("Gini coefficient")	xtitle("Year") ///
-		legend(label(1 "Contemporaneous scale") label(2 "Fixed 1987 scale")) ///
-		scheme(stcolor_alt)
+		legend(pos(6) label(1 "Contemporaneous scale") label(2 "Fixed 1987 scale")) ///
+		scheme( stsj )
 
 	graph export "gini_fixedchanging_scale.png", replace
 
 
 	tw connect gini datayear, by(equiv_measure, note(""))  ///
 		ytitle("Gini coefficient")	xtitle("Year") ///
-		scheme(stcolor_alt)
+		scheme( stsj)
 
 	graph export "gini_changing_scale.png", replace
 
 restore
-
 
 
 
@@ -599,8 +600,18 @@ local mcolors "mcolor( "`r(p1)'"" `r(p1)'" "`r(p1)'" "`r(p2)'" "`r(p2)'" "`r(p3)
 local lcolors "lcolor( "`r(p1)'"" `r(p1)'" "`r(p1)'" "`r(p2)'" "`r(p2)'" "`r(p3)'" "`r(p3)'" "`r(p4)'" "`r(p4)'" "`r(p5)'" "`r(p5)'" )"
 local msymbs  "msymbol(O T S O T O T O T O T O T)"
  
-tw connect ${scales_to_plot} year, `mcolors' `lcolors' `msymbs' ytitle("{&rho}") xlab(1985(5)2015)
+tw connect ${scales_to_plot} year, `mcolors' `lcolors' `msymbs' ytitle("{&rho}") xlab(1985(5)2015) name("ranking_corrs_time", replace)
 graph export "${outdir_ranks}//ranking_corrs_time.png", replace
+
+* greyscale version
+local mcolors   "mcolor(  black black black  gs7  gs7    gs7  gs7  gs13  gs13   gs13 gs13  gs2  gs2 )"
+local lcolors   "lcolor(  black black black  gs7  gs7  	 gs7  gs7  gs13  gs13   gs13 gs13  gs2  gs2 )"
+local lpatterns "lpattern(solid solid solid  solid solid dash dash solid solid  dash dash  dot dot)"
+local msymbs    "msymbol( O    T   S        O     T    O    T    O     T    O     T    O     T  )"
+
+tw connect ${scales_to_plot} year, `mcolors' `lcolors' `lpatterns' `msymbs' ytitle("{&rho}") xlab(1985(5)2015) name("ranking_corrs_time_gs", replace)
+graph export "${outdir_ranks}//ranking_corrs_time_gs.png", replace
+graph export "${graphs}//figure2.png", replace
 
 
 * plot correlation matrix of rankings over time
@@ -629,6 +640,22 @@ foreach corr in spear_rho kendall_taua kendall_taub {
 		name("ranking_`corr'_time", replace)
 		
 	graph export "${outdir_ranks}//ranking_`corr'_time.png", replace
+
+
+	* greyscale version
+	local mcolors   "mcolor(  black black black  gs7  gs7    gs7  gs7  gs13  gs13   gs13 gs13  gs2  gs2 )"
+	local lcolors   "lcolor(  black black black  gs7  gs7  	 gs7  gs7  gs13  gs13   gs13 gs13  gs2  gs2 )"
+	local lpatterns "lpattern(solid solid solid  solid solid dash dash solid solid  dash dash  dot dot)"
+	local msymbs    "msymbol( O    T   S        O     T    O    T    O     T    O     T    O     T  )"
+
+	tw connect ${scales_to_plot} year, ///
+		`mcolors' `lcolors' `lpatterns' `msymbs' ///
+		ytitle("`corr'") ///
+		xlab(1985(5)2015) ///
+		name("ranking_`corr'_time_gs", replace)
+		
+	graph export "${outdir_ranks}//ranking_`corr'_time_gs.png", replace
+
 }
 
 

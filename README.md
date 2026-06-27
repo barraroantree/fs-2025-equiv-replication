@@ -43,7 +43,8 @@ fs-2025-equiv-replication/
 │
 └── poverty rates/
     ├── 0_set_scales.do                 # Defines estimated scale matrices (adult and child)
-    ├── 1_plot_scales.do                # Plots estimated scale values over time
+    ├── 1_plot_scales.do                # Plots estimated scale values over time (colour + greyscale);
+    │                                   # greyscale versions also exported as figure1a/1b.png
     └── 2_calc_plot_poverty_results.do  # Applies scales to compute poverty rates,
                                         # Gini coefficients, and income-rank comparisons
 ```
@@ -94,5 +95,5 @@ Setting `run_ker = 1` in `Master.do` re-runs kernel regressions (slow; `ker_reps
 
 **Part 3 – Poverty rates and inequality figures** runs three files in sequence:
 - `0_set_scales.do` defines the estimated adult and child scale matrices
-- `1_plot_scales.do` plots scale values over time
+- `1_plot_scales.do` plots scale values over time in both colour and greyscale; greyscale versions are also saved as `figure1a.png` and `figure1b.png` in `Results/graphs/`
 - `2_calc_plot_poverty_results.do` deflates income to January 2023 prices, applies all estimated scales (plus standard alternatives: modified OECD, CSO national, square-root, per-capita), computes at-risk-of-poverty rates and Gini coefficients under each scale with both contemporaneous and fixed (1987/2015) scales, and produces income-rank comparison plots (Spearman ρ, Kendall τ). Figures are exported to `Results/graphs/`.

@@ -10,6 +10,12 @@ Create ancilliary variables and locals
 
 */
 
+
+* some extra vars 
+gen tobacco = adultgoods - totdrink
+gen hhadults_1 = hhsize - hhnumu14
+gen hhadults_1star = hhadults_1 - 1
+
 *****	(a) Copy variables
 
 local counter = 1

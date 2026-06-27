@@ -1,26 +1,7 @@
-* set paths and directories 
 ********************************************************************************
-global moddata "C:/moddata" // path where modified data files and output are stored
-global pricedata "${repo}//Prices"     // location of price files in repo 
-
-global dir "${moddata}"             // output directory - use same as local modified data location
-
-global data "$dir"
-global tables "$dir/tables"
-global graphs "$dir/graphs"
-
-global outdir_povrates "${graphs}/poverty rates/"
-global outdir_scales "${graphs}/scales/"
-global outdir_ranks "${graphs}/ranks/"
-
-* make directories if they don't exist and change to output directory
-cap mkdir "${outdir_povrates}"
-cap mkdir "${outdir_scales}"
-cap mkdir "${outdir_ranks}"
-
-
+* Calculate and plot the poverty results using the estimated scales
+********************************************************************************
 cd "${outdir_povrates}"
-
 
 
 /* Import overall price index   */
@@ -38,7 +19,6 @@ drop basenov2023
 save "${moddata}//cpi_basejan2023.dta", replace
 
 
-
 * Load data and create missing vars 
 ********************************************************************************
 
@@ -48,7 +28,6 @@ append using "${moddata}//HBS_1999_analysis.dta"
 append using "${moddata}//HBS_2004_analysis.dta"
 append using "${moddata}//HBS_2009_analysis.dta"
 append using "${moddata}//HBS_2015_analysis.dta"
-
 
 
 * some missing/differently named vars used below
@@ -89,46 +68,7 @@ gen realBHCincome = realHHdispinc
 
 
 
-* Set scales 
-********************************************************************************
-
-
-* Adult scales 
-matrix adult_scales = ( ///
-	0.653, 0.658, 0.663, 0.663, 0.576, 0.548, 0.584, 0.533 \ ///
-	0.67,  0.607, 0.664, 0.654, 0.602, 0.611, 0.604, 0.585 \ ///
-	0.684, 0.748, 0.683, 0.703, 0.529, 0.467, 0.533, 0.331 \ ///
-	0.685, 0.684, 0.668, 0.661, 0.567, 0.395, 0.604, 0.361 \ ///
-	0.717, 0.775, 0.630, 0.625, 0.598, 0.477, 0.003, 0.354 \ ///
-	0.701, 0.712, 0.664, 0.649, 0.513, 0.115, 0.471, 0.180 ///
-)
-
-matrix rownames adult_scales = 1987 1994 1999 2004 2009 2015
-matrix colnames adult_scales = food_wl food_kl comb_wl comb_kl AIDS AIDS3sls QUAIDS QUAIDS3sls
-
-* Child scales 
-matrix child_scales = ( ///
-	0.304, 0.299, 0.302, 0.294, 0.117, 0.114, 0.094, 0.196, 0.164, 0.21 \ ///
-	0.28,  0.289, 0.269, 0.28,  0.245, 0.254, 0.273, 0.248, 0.281, 0.31 \ ///
-	0.276, 0.306, 0.252, 0.186, 0.192, 0.148, 0.146, 0.098, 0.244, 0.24 \ ///
-	0.291, 0.283, 0.26,  0.261, 0.212, 0.098, 0.144, 0.158, 0.246, 0.246 \ ///
-	0.343, 0.368, 0.304, 0.245, 0.202, 0.118, -0.033, 0.066, 0.46, 0.334 \ ///
-	0.362, 0.372, 0.263, 0.24,  0.173, 0.011, 0.039, 0.092, 0.324, 0.217 ///
-)
-
-
-matrix rownames child_scales = 1987 1994 1999 2004 2009 2015
-matrix colnames child_scales = food_wl food_kl comb_wl comb_kl AIDS AIDS3sls QUAIDS QUAIDS3sls rothbarth_a rothbarth_c
-
-* Check scales
-matlist adult_scales
-matlist child_scales
-
-
-
-
-
-* Generate scales fromn matrices above
+* Generate scales fromn matrices already read in
 ********************************************************************************
 * Generate equivalence scale variables from matrices for each scale and year
 local scalelist food_wl food_kl comb_wl comb_kl AIDS AIDS3sls QUAIDS QUAIDS3sls
@@ -156,7 +96,7 @@ foreach scale of local scalelist {
 	}
 }
 
-* Other scales  
+* Scales to compare against (not estimated)
 ********************************************************************************
 
 * modified OECD scale 
@@ -280,8 +220,6 @@ foreach scale of global scales {
 		}
 	}
 }
-
-
 
 
 
@@ -695,60 +633,4 @@ foreach corr in spear_rho kendall_taua kendall_taub {
 
 
 
-* Plot adult child scales over time
-********************************************************************************
-clear 
-cd "${outdir_scales}"
-
-
-svmat adult_scales, names(col)
-gen year = _n
-recode year (1=1987) (2=1994) (3=1999) (4=2004) (5=2009) (6=2014)
-order year *
-
-gen modoecd = 0.6
-gen cso = 0.66
-
-global scales_to_plot :  subinstr global scales "sqrt" ""
-global scales_to_plot :  subinstr global scales_to_plot "noeq" ""
-
-* and plot the correlation matrix using same colors as above
-set scheme stcolor
-colorpalette plasma, n(5) nograph locals 
-local mcolors "mcolor("`r(p1)'" "`r(p1)'" "`r(p2)'" "`r(p2)'" "`r(p3)'" "`r(p3)'" "`r(p4)'" "`r(p4)'" "`r(p5)'" "`r(p5)'" )"
-local lcolors "lcolor("`r(p1)'" "`r(p1)'" "`r(p2)'" "`r(p2)'" "`r(p3)'" "`r(p3)'" "`r(p4)'" "`r(p4)'" "`r(p5)'" "`r(p5)'" )"
-local msymbs  "msymbol(O T O T O T O T O T)"
-
-tw connect ${scales_to_plot} year, `mcolors' `lcolors' `msymbs' xlab(1985(5)2015)
-graph export "${outdir_scales}//adult_scales.png", replace
-
-
-
-* Plot child child scales over time
-********************************************************************************
-clear 
-
-svmat child_scales, names(col)
-gen year = _n
-recode year (1=1987) (2=1994) (3=1999) (4=2004) (5=2009) (6=2014)
-order year *
-
-gen modoecd = 0.6
-gen cso = 0.66
-
-global scales_to_plot :  subinstr global scales "sqrt" ""
-global scales_to_plot :  subinstr global scales_to_plot "noeq" ""
-global scales_to_plot "${scales_to_plot} rothbarth_a rothbarth_c"
-
-* and plot the correlation matrix using same colors as above
-set scheme stcolor
-colorpalette plasma, n(5) nograph locals 
-local mcolors "mcolor("`r(p1)'" "`r(p1)'" "`r(p2)'" "`r(p2)'" "`r(p3)'" "`r(p3)'" "`r(p4)'" "`r(p4)'" "`r(p5)'" "`r(p5)'" "grey" "grey" )"
-local lcolors "lcolor("`r(p1)'" "`r(p1)'" "`r(p2)'" "`r(p2)'" "`r(p3)'" "`r(p3)'" "`r(p4)'" "`r(p4)'" "`r(p5)'" "`r(p5)'"  "grey" "grey")"
-local msymbs  "msymbol(O T O T O T O T O T O T)"
-
-tw connect ${scales_to_plot} year, `mcolors' `lcolors' `msymbs' xlab(1985(5)2015)
-graph export "${outdir_scales}//child_scales.png", replace
-
-
-// end  
+// end

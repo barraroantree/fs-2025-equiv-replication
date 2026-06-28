@@ -54,6 +54,7 @@ global expenditure totexpend
 
 ssc install binscatter 
 ssc install inequal7
+cap net install st0268_1.pkg
 
 // add any others you might uncover as you run the code here  
 

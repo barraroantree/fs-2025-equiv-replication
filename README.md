@@ -1,9 +1,11 @@
 # fs-2025-equiv-replication
 
-Replication archive for Doorley, Duggan, Kakoulidou and Roantree (2025), "Equivalisation (Once Again)". Fiscal Studies, 2026 (June) DOI: 10.1111/1475-5890.70025
+Replication files for Doorley, K., Duggan, L., Kakoulidou, T., Roantree, B. (2026). Equivalisation (once again). Fiscal Studies, 1–17. https://doi.org/10.1111/1475-5890.70025
+
+Any updates to these files can be found at https://github.com/barraroantree/fs-2025-equiv-replication 
 
 
-Raw microdata are restricted-access and must be applied for separately at https://issda.ucd.ie/dataverse/hbs (ISSDA 0022-00, Household Budget Survey DIP files, 1987–2015). Once obtained, extract the data files into `Data/rawdata/` in this repository (gitignored).
+Raw microdata are available from the Irish Social Science Data Archive (ISSDA) and must be applied for separately at https://issda.ucd.ie/dataverse/hbs (ISSDA 0022-00, Household Budget Survey DIP files, 1987–2015). Once obtained, extract the data files into `Data/rawdata/` in this repository (gitignored).
 
 ---
 
@@ -63,7 +65,7 @@ Gitignored folders (created automatically on first run, not committed):
 
 Apply for the HBS Datafile (ISSDA 0022-00) at https://issda.ucd.ie/dataverse/hbs. The six waves used are 1987, 1994, 1999, 2004, 2009, and 2015.
 
-Once access is granted, extract the raw `.dta` files into `Data/rawdata/` within this repository. The cleaning scripts expect the following subfolder structure (matching the ISSDA download layout):
+Once access is granted, extract the folders containing the raw `.dta` files into `Data/rawdata/` within this repository (maintaining the folder structure of the downloaded data, at least as of June 2026). The cleaning scripts expect the following subfolder structure (matching the ISSDA download layout):
 
 ```
 Data/rawdata/
@@ -94,6 +96,6 @@ Setting `run_ker = 1` in `Master.do` re-runs kernel regressions (slow; `ker_reps
 **Part 2 – 3SLS scale estimation** instruments total expenditure with household disposable income and estimates the AIDS/QUAIDS demand system via `nlsur`. It uses the cleaned analysis files (`HBS_YYYY_analysis.dta`) produced in Part 1.
 
 **Part 3 – Poverty rates and inequality figures** runs three files in sequence:
-- `0_set_scales.do` defines the estimated adult and child scale matrices
+- `0_set_scales.do` defines the estimated adult and child scale matrices (allowing part 3 to be run without parts 1 and 2)
 - `1_plot_scales.do` plots scale values over time in both colour and greyscale; greyscale versions are also saved as `figure1a.png` and `figure1b.png` in `Results/graphs/`
-- `2_calc_plot_poverty_results.do` deflates income to January 2023 prices, applies all estimated scales (plus standard alternatives: modified OECD, CSO national, square-root, per-capita), computes at-risk-of-poverty rates and Gini coefficients under each scale with both contemporaneous and fixed (1987/2015) scales, and produces income-rank comparison plots (Spearman ρ, Kendall τ). Figures are exported to `Results/graphs/`.
+- `2_calc_plot_poverty_results.do` deflates income to January 2023 prices, applies all estimated scales (plus standard alternatives: modified OECD, CSO national, square-root, per-capita), computes at-risk-of-poverty rates and Gini coefficients under each scale with both contemporaneous and fixed (1987/2015) scales, and produces income-rank comparison plots (Spearman ρ, Kendall τ). All figures are exported to `Results/graphs/`; paper figures are also saved there under their figure numbers (`figure3.png`, `figure4a.png`, `figure4b.png`, `figure5b.png`, `figure5c.png`).

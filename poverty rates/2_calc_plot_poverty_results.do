@@ -25,9 +25,9 @@ save "${moddata}//cpi_basejan2023.dta", replace
 use "${moddata}//HBS_1987_analysis.dta", clear
 append using "${moddata}//HBS_1994_analysis.dta"
 append using "${moddata}//HBS_1999_analysis.dta"
-append using "${moddata}//HBS_2004_analysis.dta", force
+append using "${moddata}//HBS_2004_analysis.dta"
 append using "${moddata}//HBS_2009_analysis.dta"
-append using "${moddata}//HBS_2015_analysis.dta", force
+append using "${moddata}//HBS_2015_analysis.dta"
 
 
 * some missing/differently named vars used below
@@ -40,6 +40,8 @@ rename hhnum14to17 num14to17inhh
 gen datayear = hbsyear 
 
 gen hhwgt = grossfac	
+replace grossfac = grossfac *100000*100000*100000 if datayear==1994		// differently coded in 1994 for some reason 
+
 gen ahhwgt = grossfac*numinhh
 gen chhwgt = grossfac*numU14inhh
 
@@ -256,12 +258,47 @@ tabstat arop_* [aw=ahhwgt], by(datayear) statistics(mean)	// people
 preserve 
 	collapse (sum) numinhh n_arop_* [aw=hhwgt], by(datayear)
 	foreach var of varlist n_arop_* {
-		replace `var' = `var'/numinhh	
+		replace `var' = `var'/numinhh
+		label variable `var' "`var'"	
 	}	
 	rename n_arop_* *
 
-	graph dot "${scales}", over(datayear) nolab ${markers} ytitle("At-risk-of-poverty rate: overall (%)") vertical
+	graph dot "${scales}", over(datayear) nolab ${markers} ytitle("Poverty rate") vertical
 	graph export "arop_all.png", replace
+
+	tw connect ${scales} datayear, ytitle("Poverty rate") scheme(stcolor)
+
+	* 6-panel by year greyscale version 
+	graph hbar noeq modoecd cso sqrt food_wl comb_wl food_kl comb_kl AIDS AIDS3sls QUAIDS QUAIDS3sls, by(datayear) ascat  nolabel
+	graph export "${graphs}//figure4_alt.png", replace
+
+	* 3-panel greyscale version 
+	tw connect noeq modoecd cso sqrt datayear, name(panel1, replace) ///
+		ytitle("Poverty rate")  ylabel(0(0.05)0.25) ///
+		mcolor(black black black black) msymbol(O T S D) ///
+		lcolor(black black black black) lpattern(solid dash dash dash) ///
+		legend(label(1 "Unequivalised") label(2 "Modified OECD") label(3 "CSO national") label(4 "Square root"))
+
+	graph export "${graphs}//figure4a.png", replace
+
+	tw connect food_wl comb_wl food_kl comb_kl datayear, name(panel2, replace) ///
+		ytitle("Poverty rate")  ylabel(0(0.05)0.25) ///
+		mcolor(gs6 gs6 gs8 gs8) msymbol(O T O T) ///
+		lcolor(gs6 gs6 gs8 gs8) lpattern(solid solid dash dash) ///
+		legend(label(1 "Food (WL)") label(2 "Combined (WL)") label(3 "Food (K)") label(4 "Combined (K)"))
+	graph export "${graphs}//figure4b.png", replace
+
+
+	tw connect AIDS AIDS3sls QUAIDS QUAIDS3sls datayear, name(panel3, replace) ///
+		ytitle("Poverty rate")  ylabel(0(0.05)0.25) ///
+		mcolor(gs12 gs12 gs14 gs14) msymbol(O T O T) ///
+		lcolor(gs12 gs12 gs14 gs14) lpattern(solid solid dash dash) ///
+		legend(label(1 "AIDS") label(2 "AIDS (3SLS)") label(3 "QUAIDS") label(4 "QUAIDS (3SLS)"))
+	graph export "${graphs}//figure4c.png", replace
+
+
+
+	
 restore 
 
 
@@ -278,8 +315,37 @@ preserve
 	}	
 	rename nchild_arop_* *
 
-	graph dot "${scales}", over(datayear) nolab ${markers} ytitle("At-risk-of-poverty rate: children (%)") vertical
+	graph dot "${scales}", over(datayear) nolab ${markers} ytitle("Poverty rate") vertical
 	graph export "arop_kids.png", replace
+
+	* 6-panel by year greyscale version 
+	graph hbar noeq modoecd cso sqrt food_wl comb_wl food_kl comb_kl AIDS AIDS3sls QUAIDS QUAIDS3sls, by(datayear) ascat  nolabel
+	graph export "${graphs}//figure5_alt.png", replace
+
+	* 3-panel greyscale version 
+	tw connect noeq modoecd cso sqrt datayear, name(panel1, replace) ///
+		ytitle("Poverty rate")  ylabel(0(0.05)0.25) ///
+		mcolor(black black black black) msymbol(O T S D) ///
+		lcolor(black black black black) lpattern(solid dash dash dash) ///
+		legend(label(1 "Unequivalised") label(2 "Modified OECD") label(3 "CSO national") label(4 "Square root"))
+
+	graph export "${graphs}//figure5a.png", replace
+
+	tw connect food_wl comb_wl food_kl comb_kl datayear, name(panel2, replace) ///
+		ytitle("Poverty rate")  ylabel(0(0.05)0.25) ///
+		mcolor(gs6 gs6 gs8 gs8) msymbol(O T O T) ///
+		lcolor(gs6 gs6 gs8 gs8) lpattern(solid solid dash dash) ///
+		legend(label(1 "Food (WL)") label(2 "Combined (WL)") label(3 "Food (K)") label(4 "Combined (K)"))
+	graph export "${graphs}//figure5b.png", replace
+
+
+	tw connect AIDS AIDS3sls QUAIDS QUAIDS3sls datayear, name(panel3, replace) ///
+		ytitle("Poverty rate")  ylabel(0(0.05)0.25) ///
+		mcolor(gs12 gs12 gs14 gs14) msymbol(O T O T) ///
+		lcolor(gs12 gs12 gs14 gs14) lpattern(solid solid dash dash) ///
+		legend(label(1 "AIDS") label(2 "AIDS (3SLS)") label(3 "QUAIDS") label(4 "QUAIDS (3SLS)"))
+	graph export "${graphs}//figure5c.png", replace
+
 
 restore 
 
@@ -287,17 +353,22 @@ restore
 
 
 * Gini coefficient  
-tabstat gini_*, by(datayear) statistics(mean)
+tabstat gini_*, by(datayear) statistics(mean) format(%9.3g)
 
 graph dot gini_*, over(datayear) nolab ${markers} ytitle("Gini coefficient") vertical 
 graph export "gini.png", replace
 
 graph dot gini_*, over(datayear) nolab ${markers} ytitle("Gini coefficient") vertical ylab(0.25(0.05)0.35) exclude0
 graph export "gini_zoom.png", replace
+graph export "${graphs}//figure3.png", replace
 
 
+* 6-panel by year greyscale version 
+graph hbar gini_*, by(datayear) ascat nolabel exclude0 ylabel(0.28(0.02)0.36)
+graph export "${graphs}//figure3_alt.png", replace
 
 
+exit 
 
 * Compare constant and changing scales  
 ********************************************************************************

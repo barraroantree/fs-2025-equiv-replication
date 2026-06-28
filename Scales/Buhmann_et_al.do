@@ -3,7 +3,7 @@
 
 eststo drop est*
 
-local years 1987 1994 1999 2004 2009 2015
+local years "${years}"
 local results "${tables}"
 local moddata "${moddata}"          // modified data location on local machine
 

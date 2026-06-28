@@ -28,7 +28,7 @@ reg e_`i' $exogenous_vars
 predict fs_resid_`i', residuals
 
 return list
-putexcel set "$output\childage_firststage_$year.xlsx", sheet(e_`i') modify
+putexcel set "$output/childage_firststage_$year.xlsx", sheet(e_`i') modify
 putexcel A2 = matrix(r(table)), names
 
 }

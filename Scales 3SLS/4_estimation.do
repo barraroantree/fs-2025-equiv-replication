@@ -145,6 +145,6 @@ $quadratic * ({lambda_`i'}/(`b_p'*`c_p_d'))*((ln_expenditure + `ln_a_p' - `ln_m_
 nlsur `estimating_system'
 
 return list
-putexcel set "$output\childage_estimates.xlsx", sheet($year) modify
+putexcel set "$output/childage_estimates.xlsx", sheet($year) modify
 putexcel A2 = matrix(r(table)), names
 // end 

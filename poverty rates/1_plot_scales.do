@@ -14,7 +14,7 @@ gen year = _n
 recode year (1=1987) (2=1994) (3=1999) (4=2004) (5=2009) (6=2014)
 order year *
 
-gen modoecd = 0.6
+gen modoecd = 0.5
 gen cso = 0.66
 
 global scales_to_plot :  subinstr global scales "sqrt" ""
@@ -52,8 +52,8 @@ gen year = _n
 recode year (1=1987) (2=1994) (3=1999) (4=2004) (5=2009) (6=2014)
 order year *
 
-gen modoecd = 0.6
-gen cso = 0.66
+gen modoecd = 0.3
+gen cso = 0.33
 
 global scales_to_plot :  subinstr global scales "sqrt" ""
 global scales_to_plot :  subinstr global scales_to_plot "noeq" ""
